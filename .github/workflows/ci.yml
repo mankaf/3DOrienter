@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install project
+        run: python -m pip install -e ".[dev]"
+      - name: Lint
+        run: python -m ruff check .
+      - name: Test
+        run: python -m pytest -q
+      - name: Smoke-test CLI
+        run: 3dorienter --help
+
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build CLI image
+        run: docker build --tag 3dorienter-cli:test .
+      - name: Smoke-test CLI image
+        run: docker run --rm 3dorienter-cli:test --help

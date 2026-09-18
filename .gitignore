@@ -1,0 +1,45 @@
+.venv/
+.train-venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/
+
+# Local secrets and environment overrides
+.env
+.env.*
+!.env.example
+
+# Model weights, caches, and training artifacts
+models/
+weights/
+training_data/
+training_runs/
+unsloth_compiled_cache/
+*.ckpt
+*.onnx
+*.pt
+*.pth
+*.safetensors
+
+# User inputs and generated 3D artifacts/reports
+*.3mf
+*.glb
+*.gltf
+*.obj
+*.ply
+*.stl
+*.STL
+*.jsonl
+*_report.json
+*_plan.json
+
+# Local worker/runtime storage
+data/
+uploads/
+outputs/
+tmp/

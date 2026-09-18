@@ -189,7 +189,7 @@ Use UUID/ULID identifiers; never expose local paths. Enforce ownership on every 
 
 ## 8. Repository migration and target layout
 
-The current source directory is not a Git repository. The target repository exists but has no commits. The current directory also contains roughly 12.3 GB of model files, 7.0 GB of training environment data, 1.2 GB of training runs, virtual environments, generated meshes, and a local `.env` file. Do not copy these into Git.
+Migration status on 2026-09-18: the allowlisted CLI source has been copied into the target Git repository while the original source directory remains unchanged. The source directory also contains roughly 12.3 GB of model files, 7.0 GB of training environment data, 1.2 GB of training runs, virtual environments, generated meshes, and a local `.env` file; all remain excluded from Git.
 
 Proposed monorepo:
 
@@ -247,7 +247,7 @@ Store weights outside Git with a pinned manifest containing source, exact revisi
 11. Package Linux containers with pinned Python/CUDA dependencies; do not depend on a WSL-created virtual environment.
 12. Emit progress events and honor cancellation between stages.
 
-Current baseline verification on 2026-09-18: all three existing unit tests pass under WSL. That is useful but far below a service launch gate.
+Current baseline verification on 2026-09-18: all three existing unit tests, Ruff, CLI startup, and an end-to-end STL optimization smoke test pass in a fresh Windows Python 3.14 environment. Cross-platform GitHub Actions covers Linux and Windows on Python 3.10 and 3.12. This is useful but still far below a service launch gate.
 
 ## 10. GPU feasibility and capacity
 
@@ -444,10 +444,10 @@ Before taking payment:
 
 ## 17. Immediate next actions
 
-1. Put this plan and diagram into the target repository.
+1. Completed: put this plan and diagram into the target repository.
 2. Decide whether to launch with TripoSR or a legally reviewed alternative/API.
 3. Run the 20-image feasibility benchmark on the actual 4070.
-4. Migrate only the source allowlist; preserve the original folder as a temporary backup.
+4. Completed: migrate only the source allowlist; preserve the original folder as a temporary backup.
 5. Refactor 3DOrienter into a library and add slicer-backed candidate validation.
 6. Build the offline vertical slice before creating accounts, payments, or public networking.
 
