@@ -1,0 +1,17 @@
+[[models]]
+id = "triposr"
+upstream = "https://github.com/VAST-AI-Research/TripoSR"
+revision = "107cefdc244c39106fa830359024f6a2f1c78871"
+weights = "stabilityai/TripoSR"
+license = "MIT"
+license_url = "https://github.com/VAST-AI-Research/TripoSR/blob/107cefdc244c39106fa830359024f6a2f1c78871/LICENSE"
+accepted_for = "EU-hosted geometry-only feasibility benchmark"
+accepted_on = "2026-09-19"
+notes = "Run in an isolated environment; official default requires approximately 6 GB VRAM."
+
+[[dependencies]]
+id = "torchmcubes"
+upstream = "https://github.com/tatsy/torchmcubes"
+revision = "879926d0ef58e6ce0ac2630fdecb5e53af7ed3ff"
+license = "MPL-2.0"
+purpose = "Marching-cubes extraction; verified CPU fallback build for WSL worker."

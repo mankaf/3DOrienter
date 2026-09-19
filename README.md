@@ -1,7 +1,7 @@
 # 3DOrienter CLI
 
-A Python MVP for choosing an FDM build orientation from an STL or other triangle mesh.
-It currently optimizes transparent geometric proxies for:
+A Python MVP for turning an image or existing mesh into a validated, scaled, and oriented FDM
+artifact. It currently optimizes transparent geometric proxies for:
 
 - support burden and removal effort,
 - global sloped-surface quality,
@@ -40,6 +40,22 @@ To exercise the production-style CLI container locally:
 docker build -t 3dorienter-cli .
 docker run --rm 3dorienter-cli --help
 ```
+
+## Offline image-to-STL pipeline
+
+The deterministic mock backend exercises the complete pipeline without downloading model weights:
+
+```bash
+3dorienter-pipeline input.png \
+  --backend mock \
+  --jobs-dir ./data/jobs \
+  --target-max-mm 100 \
+  --samples 400
+```
+
+Each job gets a controlled private directory containing a metadata-stripped RGB input, generated
+mesh, normalized STL, oriented STL, and versioned JSON report. The report uses relative artifact
+names and does not expose host paths. See `docs/TRIPOSR_SETUP.md` for the isolated GPU backend.
 
 ## Optimize a model
 

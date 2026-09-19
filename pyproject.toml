@@ -4,14 +4,16 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "3dorienter"
-version = "0.1.0"
-description = "CLI optimizer for FDM print orientation using support and surface-quality proxies"
+version = "0.2.0"
+description = "Image-to-mesh validation and FDM print-orientation pipeline"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [{name = "3DOrienter project"}]
 dependencies = [
   "numpy>=1.26",
+  "pillow>=10",
+  "pydantic>=2.7",
   "scipy>=1.13",
   "trimesh>=4.4",
   "typer>=0.12",
@@ -27,6 +29,7 @@ dev = [
 
 [project.scripts]
 3dorienter = "orienter3d.cli:app"
+3dorienter-pipeline = "orienter3d.service.cli:app"
 
 [tool.setuptools.packages.find]
 where = ["src"]
