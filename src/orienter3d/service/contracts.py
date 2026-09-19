@@ -12,6 +12,7 @@ class PipelineState(str, Enum):
     RECONSTRUCTING = "reconstructing"
     VALIDATING = "validating"
     ORIENTING = "orienting"
+    SLICING = "slicing"
     SUCCEEDED = "succeeded"
     FAILED = "failed"
 
@@ -29,6 +30,10 @@ class ErrorCode(str, Enum):
     BACKEND_TIMEOUT = "backend_timeout"
     MESH_INVALID = "mesh_invalid"
     MESH_TOO_COMPLEX = "mesh_too_complex"
+    SLICER_NOT_CONFIGURED = "slicer_not_configured"
+    SLICER_FAILED = "slicer_failed"
+    SLICER_TIMEOUT = "slicer_timeout"
+    SLICER_OUTPUT_INVALID = "slicer_output_invalid"
     PIPELINE_FAILED = "pipeline_failed"
 
 
@@ -117,6 +122,16 @@ class OrientationReport(FrozenModel):
     candidates_retained: int
 
 
+class SlicingReport(FrozenModel):
+    engine: str
+    engine_version: str
+    plate_index: int = 1
+    print_time_seconds: float = Field(ge=0.0)
+    filament_used_mm: float = Field(ge=0.0)
+    filament_used_g: float = Field(ge=0.0)
+    support_used: bool
+
+
 class PipelineEvent(FrozenModel):
     state: PipelineState
     timestamp_utc: str
@@ -127,6 +142,7 @@ class ArtifactManifest(FrozenModel):
     normalized_mesh: str
     oriented_stl: str
     report: str
+    sliced_project: str | None = None
 
 
 class PipelineReport(FrozenModel):
@@ -139,5 +155,6 @@ class PipelineReport(FrozenModel):
     reconstruction: ReconstructionReport
     mesh: MeshReport
     orientation: OrientationReport
+    slicing: SlicingReport | None = None
     artifacts: ArtifactManifest
     events: tuple[PipelineEvent, ...]

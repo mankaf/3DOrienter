@@ -55,7 +55,8 @@ The deterministic mock backend exercises the complete pipeline without downloadi
 
 Each job gets a controlled private directory containing a metadata-stripped RGB input, generated
 mesh, normalized STL, oriented STL, and versioned JSON report. The report uses relative artifact
-names and does not expose host paths. See `docs/TRIPOSR_SETUP.md` for the isolated GPU backend.
+names and does not expose host paths. See `docs/TRIPOSR_SETUP.md` for the isolated GPU backend and
+`docs/SLICER_VALIDATION_SETUP.md` for optional real-slicer print-time/filament validation.
 
 ## Optimize a model
 

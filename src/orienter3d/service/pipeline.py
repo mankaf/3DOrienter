@@ -23,6 +23,7 @@ from .contracts import (
 )
 from .image_preflight import prepare_image
 from .mesh_validation import validate_and_normalize_mesh
+from .slicing import SlicerBackend
 
 SAFE_JOB_ID = re.compile(r"^[a-zA-Z0-9_-]{1,64}$")
 
@@ -68,6 +69,7 @@ def run_pipeline(
     backend: ReconstructionBackend,
     options: PipelineOptions | None = None,
     job_id: str | None = None,
+    slicer: SlicerBackend | None = None,
 ) -> PipelineExecution:
     """Run image preflight, reconstruction, mesh validation, and orientation."""
     options = options or PipelineOptions()
@@ -118,6 +120,14 @@ def run_pipeline(
     export_mesh(apply_orientation(mesh, best.rotation), oriented_path)
     best_payload = best.to_dict()
 
+    slicing_report = None
+    sliced_project_name = None
+    if slicer is not None:
+        mark(PipelineState.SLICING)
+        sliced_project_path = workspace.output_dir / "oriented.gcode.3mf"
+        slicing_report = slicer.slice(oriented_path, sliced_project_path)
+        sliced_project_name = "output/oriented.gcode.3mf"
+
     mark(PipelineState.SUCCEEDED)
     report_path = workspace.reports_dir / "pipeline-report.json"
     report = PipelineReport(
@@ -135,11 +145,13 @@ def run_pipeline(
             metrics=best_payload["metrics"],
             candidates_retained=len(results),
         ),
+        slicing=slicing_report,
         artifacts=ArtifactManifest(
             normalized_image="input/input.png",
             normalized_mesh="generated/normalized.stl",
             oriented_stl="output/oriented.stl",
             report="reports/pipeline-report.json",
+            sliced_project=sliced_project_name,
         ),
         events=tuple(events),
     )

@@ -30,6 +30,8 @@ jobs:
         run: python -m pytest -q
       - name: Smoke-test CLI
         run: 3dorienter --help
+      - name: Smoke-test pipeline CLI
+        run: 3dorienter-pipeline --help
 
   container:
     runs-on: ubuntu-latest

@@ -1,4 +1,6 @@
 import json
+from dataclasses import dataclass
+from pathlib import Path
 
 import pytest
 import trimesh
@@ -10,7 +12,7 @@ from orienter3d.service import (
     ServiceError,
     run_pipeline,
 )
-from orienter3d.service.contracts import ErrorCode, ImageLimits, OrientationOptions
+from orienter3d.service.contracts import ErrorCode, ImageLimits, OrientationOptions, SlicingReport
 from orienter3d.service.image_preflight import prepare_image
 
 
@@ -41,6 +43,41 @@ def test_mock_pipeline_writes_safe_bundle(tmp_path):
     oriented = trimesh.load(execution.workspace_path / "output" / "oriented.stl")
     assert oriented.bounds[0][2] == pytest.approx(0.0, abs=1e-6)
     assert max(normalized.extents) == pytest.approx(80.0, rel=1e-4)
+
+
+@dataclass(frozen=True)
+class _StubSlicer:
+    def slice(self, stl_path: Path, output_path: Path) -> SlicingReport:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_text("stub gcode.3mf\n", encoding="utf-8")
+        return SlicingReport(
+            engine="stub",
+            engine_version="0",
+            print_time_seconds=120.0,
+            filament_used_mm=1000.0,
+            filament_used_g=3.0,
+            support_used=False,
+        )
+
+
+def test_pipeline_attaches_slicing_report_when_slicer_provided(tmp_path):
+    image_path = tmp_path / "source.png"
+    Image.new("RGB", (64, 48), "white").save(image_path)
+    options = PipelineOptions(orientation=OrientationOptions(samples=4, seed=1, keep_top=2))
+
+    execution = run_pipeline(
+        image_path,
+        tmp_path / "jobs",
+        MockReconstructionBackend(),
+        options,
+        job_id="sliced-job-1",
+        slicer=_StubSlicer(),
+    )
+
+    payload = json.loads(execution.report_path.read_text(encoding="utf-8"))
+    assert payload["slicing"]["print_time_seconds"] == pytest.approx(120.0)
+    assert payload["artifacts"]["sliced_project"] == "output/oriented.gcode.3mf"
+    assert (execution.workspace_path / "output" / "oriented.gcode.3mf").is_file()
 
 
 def test_preflight_rejects_oversized_dimensions(tmp_path):
